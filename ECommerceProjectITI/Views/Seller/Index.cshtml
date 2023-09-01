@@ -1,0 +1,60 @@
+﻿@model List<Product>
+
+@{
+	ViewBag.Title = "My Products";
+}
+
+@if (Model.Count > 0) {
+	<div class="text-end pt-3 pe-5">
+		<a class="btn btn-primary" asp-action="CreateProduct">New Product</a>
+	</div>
+	<section>
+		<div class="container px-4 px-lg-5 mt-5">
+			<div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
+				@foreach (var product in Model) {
+					<div class="col mb-5">
+						<div class="card h-100" style="max-width: 18rem; max-height: 50rem;">
+							<!-- Product image-->
+							<img class="card-img-top rounded-bottom" src="~/Images/@product.Image" alt="Product Image" style="max-height: 150px; object-fit: cover; object-position: top;">
+							<!-- Product details-->
+							<div class="card-body p-0 w-100">
+								<div class="p-4">
+									<!-- Product name-->
+									<h5 class="card-title">@product.Name</h5>
+									@if (product.Description != null) {
+										<p class="card-text multiline-overflow" title="@product.Description">@product.Description</p>
+									}
+									<!-- Product price-->
+								</div>
+								<hr class="w-100" />
+								<p class="card-text text-center fw-bolder">
+									Price: @product.Price L.E.
+								</p>
+								<hr class="w-100" />
+								@if (product.MaxQuantity == 0) {
+									<p class="card-text text-center fw-bolder mb-4 text-decoration-line-through">
+										Out of Stock
+									</p>
+								} else {
+									<p class="card-text text-center fw-bolder mb-4">
+										Available: @product.MaxQuantity
+									</p>
+								}
+							</div>
+							<!-- Product actions-->
+							<div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
+								<div class="text-center"><a class="btn btn-outline-dark mt-auto" asp-action="Details" asp-route-Id="@product.Id">Details</a></div>
+							</div>
+						</div>
+					</div>
+				}
+			</div>
+		</div>
+	</section>
+} else {
+	<div class="container text-center mt-5">
+		<h3>No products available.</h3>
+		<p>You don't have any products listed.</p>
+		<a class="btn btn-primary" asp-action="CreateProduct">Create New Product</a>
+	</div>
+}

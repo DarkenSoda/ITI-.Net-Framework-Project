@@ -1,0 +1,123 @@
+﻿@model UserEditViewModel
+@{
+	ViewBag.Title = "Edit Profile";
+}
+
+<div class="row justify-content-center">
+	<div class="col-md-4">
+		<div>
+			<h3 class="text-center">Edit Profile</h3>
+			<hr />
+		</div>
+		<form asp-action="EditProfile" method="post" enctype="multipart/form-data">
+			<div asp-validation-summary="All" class="text-danger"></div>
+			<div class="form-group d-flex justify-content-center align-items-center">
+				<img class="rounded-4" id="selectedImage" src="~/Images/@(ViewBag.UserImage ?? "default.png")" alt="Selected Image" style="max-height: 200px;" />
+			</div>
+			<div class="form-group">
+				<label asp-for="Username" class="control-label"></label>
+				<input asp-for="Username" class="form-control" />
+				<span asp-validation-for="Username" class="text-danger"></span>
+			</div>
+
+			<div class="form-group">
+				<label asp-for="CurrentPassword" class="control-label"></label>
+				<input asp-for="CurrentPassword" class="form-control" />
+				<span asp-validation-for="CurrentPassword" class="text-danger"></span>
+			</div>
+			<div class="form-group">
+				<label asp-for="Password" class="control-label"></label>
+				<input asp-for="Password" class="form-control" />
+				<span asp-validation-for="Password" class="text-danger"></span>
+			</div>
+
+			<div class="form-group">
+				<label asp-for="ConfirmPassword" class="control-label"></label>
+				<input asp-for="ConfirmPassword" class="form-control" />
+				<span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+			</div>
+
+			<div class="form-group">
+				<label asp-for="Name" class="control-label"></label>
+				<input asp-for="Name" class="form-control" />
+				<span asp-validation-for="Name" class="text-danger"></span>
+			</div>
+
+			<div class="form-group" id="addressField" style="display: @(Model?.Role == "Customer" ? "block;" : "none;")">
+				<label asp-for="Address" class="control-label"></label>
+				<input asp-for="Address" class="form-control" />
+				<span asp-validation-for="Address" class="text-danger"></span>
+			</div>
+
+			<div class="form-group d-flex justify-content-between">
+				<div class="form-group me-3">
+					<label asp-for="Email" class="control-label"></label>
+					<input asp-for="Email" class="form-control" />
+					<span asp-validation-for="Email" class="text-danger"></span>
+				</div>
+				<div class="form-group ms-4">
+					<label asp-for="Phonenumber" class="control-label"></label>
+					<input asp-for="Phonenumber" class="form-control" />
+					<span asp-validation-for="Phonenumber" class="text-danger"></span>
+				</div>
+			</div>
+
+			<div class="form-group">
+				<label asp-for="Image" class="control-label"></label>
+				<div class="form-group d-flex">
+					<input asp-for="Image" class="form-control" onchange="displaySelectedImage(this);" />
+					<div class="input-group-append">
+						<button type="button" class="btn btn-danger ms-2" onclick="removeSelectedImage()">
+							<i class="bi bi-trash"></i>
+						</button>
+					</div>
+				</div>
+				<span asp-validation-for="Image" class="text-danger"></span>
+			</div>
+
+			<div class="form-group mt-3 d-flex justify-content-center">
+				<input type="submit" value="Save Changes" class="btn btn-primary" />
+			</div>
+		</form>
+
+		<div class="mt-3 d-flex justify-content-center">
+			<a asp-action="Profile" class="btn btn-outline-danger">Cancel</a>
+		</div>
+	</div>
+</div>
+
+@section Scripts {
+	@{
+		await Html.RenderPartialAsync("_ValidationScriptsPartial");
+	}
+	<script>
+		if ('@ViewBag.UserImage' === null || '@ViewBag.UserImage' === "") {
+			var imagelink = "default.png";
+		}
+		else {
+			var imagelink = '@ViewBag.UserImage';
+		}
+		var initialImage = '/Images/' + imagelink;
+
+		function displaySelectedImage(input) {
+			const selectedImage = document.getElementById("selectedImage");
+			if (input.files && input.files[0]) {
+				selectedImage.src = URL.createObjectURL(input.files[0]);
+			} else {
+				selectedImage.src = initialImage;
+			}
+		}
+
+		function removeSelectedImage() {
+			const imageElement = document.getElementById("selectedImage");
+			imageElement.src = initialImage;
+
+			const fileInput = document.querySelector("input[name='Image']");
+			fileInput.value = null;
+		}
+
+		$(document).ready(function () {
+			$('#shopCount').html(@ViewBag.CartCount);
+		});
+	</script>
+}

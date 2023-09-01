@@ -1,0 +1,152 @@
+﻿@model List<CartItem>?
+
+@{
+	ViewData["Title"] = "Shopping Cart";
+}
+
+@section Scripts {
+	@{
+		await Html.RenderPartialAsync("_ValidationScriptsPartial");
+	}
+
+	<script>
+		$(document).ready(function () {
+			$('#shopCount').html(@ViewBag.CartCount);
+			$('#totalPrice').html(@ViewBag.TotalPrice);
+		});
+
+		function updateCartItemQuantity(cartItemId, change) {
+			$.ajax({
+				type: 'POST',
+				url: '@Url.Action("UpdateCartItemQuantity")',
+				data: {
+					Id: cartItemId,
+					value: change
+				},
+				success: function (response) {
+					if (response.success) {
+						$('#id-' + cartItemId).html(response.quantity);
+						$('#itemTotalPrice-' + cartItemId).html(response.price);
+						$('#totalPrice').html(response.totalPrice);
+					}
+					else {
+						if (change > 0) {
+							alert("Max Quantity Reached.");
+						} else {
+							alert("Min Quantity Reached.");
+						}
+					}
+				},
+				error: function (error) {
+					console.error('Error updating quantity:', error);
+				}
+			});
+		}
+
+		function deleteCartItem(cartItemId) {
+			$.ajax({
+				type: 'POST',
+				url: '@Url.Action("DeleteCartItem")',
+				data: {
+					Id: cartItemId
+				},
+				success: function (response) {
+					if (response.success) {
+						alert("Item Deleted Successfully.");
+						$('#shopCount').html(response.cartCount);
+						$('#row-' + cartItemId).remove();
+						$('#totalPrice').html(response.totalPrice);
+						if (response.cartCount === 0) {
+							$('#section1').hide();
+							$('#section2').css('display', function () {
+								return 'block';
+							});
+						}
+					} else {
+						alert("Couldn't Delete Item.");
+					}
+				},
+				error: function (error) {
+					console.error('Error deleting item:', error);
+				}
+			});
+		}
+		
+		function PurchaseComplete() {
+			alert("Purchase Complete!");
+		}
+	</script>
+}
+
+<h3>Shopping Cart</h3>
+@if (Model != null && Model.Count > 0) {
+	<section id="section1">
+		<table class="table table-hover text-center justify-content-center align-content-center">
+			<thead>
+				<tr>
+					<th scope="col"></th>
+					<th scope="col">Product Name</th>
+					<th scope="col">Price</th>
+					<th scope="col">Available Quantity</th>
+					<th scope="col"></th>
+					<th scope="col">Quantity</th>
+					<th scope="col"></th>
+					<th scope="col">Total Price</th>
+					<th scope="col">Remove Item</th>
+				</tr>
+			</thead>
+			<tbody>
+				@foreach (CartItem cartItem in Model) {
+					<tr id="row-@cartItem.Product?.Id">
+						<th scope="row">
+							<img src="~/Images/@cartItem.Product?.Image" style="max-width: 50px; max-height: 50px;" />
+						</th>
+						<td>@cartItem.Product?.Name</td>
+						<td>@cartItem.Product?.Price</td>
+						<td>@cartItem.Product?.MaxQuantity</td>
+						<td class="text-end me-0 pe-0">
+							<button class="btn btn-primary btn-danger bi-dash-circle" onclick="updateCartItemQuantity(@cartItem.Product?.Id, -1)"></button>
+						</td>
+						<td id="id-@cartItem.Product?.Id">@cartItem.Quantity</td>
+						<td class="text-start ms-0 ps-0">
+							<button class="btn btn-primary btn-success bi-plus-circle" onclick="updateCartItemQuantity(@cartItem.Product?.Id, 1)"></button>
+						</td>
+						<td id="itemTotalPrice-@cartItem.Product?.Id">
+							@(cartItem.Quantity * cartItem.Product?.Price)
+						</td>
+						<td>
+							<button class="btn btn-primary btn-danger bi-trash-fill" onclick="deleteCartItem(@cartItem.Product?.Id)">
+								Remove Item
+							</button>
+						</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+
+		<div class="d-flex justify-content-end mt-5">
+			<div class="text-start" style="min-width: 180px;">
+				<span class="fw-bold">Total Price:</span>
+				<span id="totalPrice">0</span>
+			</div>
+		</div>
+		<div class="d-flex justify-content-end">
+			<div class="text-start" style="min-width: 180px;">
+				<form method="post" asp-action="Checkout">
+					<button type="submit" class="btn btn-outline-success mt-2" onclick="PurchaseComplete()">Check Out</button>
+				</form>
+			</div>
+		</div>
+	</section>
+}
+
+<section id="section2" style="display:@(Model?.Count > 0 ? "none;" : "block;")">
+	<div class="container text-center mt-5">
+		<h3>No Items in Cart.</h3>
+		<p>Your cart is empty.</p>
+		<a asp-action="Index" class="btn btn-outline-primary">
+			<i class="bi bi-shop"></i>
+			Browse Products
+		</a>
+	</div>
+</section>

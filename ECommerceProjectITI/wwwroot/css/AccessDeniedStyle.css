@@ -1,0 +1,9 @@
+h6 {
+    color: red;
+    text-decoration: underline;
+}
+
+.wrapper {
+    display :block;
+    min-height: 52vh;
+}

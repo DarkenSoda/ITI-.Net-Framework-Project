@@ -1,0 +1,74 @@
+﻿@model Product
+
+@{
+	ViewBag.Title = "Product Details";
+}
+
+@section Scripts {
+	@{
+		await Html.RenderPartialAsync("_ValidationScriptsPartial");
+	}
+
+	<script>
+		$(".addToCart").click(function () {
+			var productId = $(this).data("id");
+			var shoppingCartCount = $("#shopCount").html();
+			if ($(this).data("count") > 0) {
+				$.ajax({
+					type: "POST",
+					url: "@Url.Action("AddToCart")",
+					data: { Id: productId },
+					success: function (data) {
+						if (data.success) {
+							$("#shopCount").html(data.cartCount);
+						}
+					},
+				});
+			} else {
+				alert("Out of Stock.");
+			}
+		});
+
+		$(document).ready(function () {
+			$('#shopCount').html(@ViewBag.CartCount);
+		});
+	</script>
+}
+
+<section>
+	<div class="container px-4 px-lg-5">
+		<div class="row gx-4 gx-lg-5 align-items-center">
+			<div class="fs-5 mb-2">
+				<span class="fw-bolder text-muted">Seller: </span>
+				<span class="text-muted small">@Model.Seller?.User?.Name</span>
+			</div>
+			<div class="col-md-6">
+				<img class="card-img" src="~/Images/@Model.Image" alt="..." style="max-height: 31em; object-fit: contain;" />
+			</div>
+			<div class="col-md-6 text-center h-100 d-flex flex-column">
+				<h1 class="fw-bolder mb-0">@Model.Name</h1>
+
+				<div class="fs-5 mb-3">
+					<span>@Model.Price L.E. |</span>
+					<span class="@(Model.MaxQuantity == 0 ? "text-decoration-line-through" : "text-decoration-none") ">@(Model.MaxQuantity == 0 ? "Out of Stock" : $"{Model.MaxQuantity} Left")</span>
+				</div>
+
+				<div class="mb-5">
+					<p class="lead" style="word-wrap: break-word;">@Model.Description</p>
+				</div>
+				<div class="mt-auto">
+					<button class="btn btn-outline-dark addToCart" type="button" data-id="@Model.Id" data-count="@Model.MaxQuantity">
+						<i class="bi-cart-fill me-1"></i>
+						Add to cart
+					</button>
+				</div>
+				<div class="mt-4">
+					<a class="btn btn-outline-primary" asp-action="Index">
+						<i class="bi-house-fill"></i>
+						Browse All Products
+					</a>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>

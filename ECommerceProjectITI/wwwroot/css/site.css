@@ -1,0 +1,33 @@
+.superscript-small {
+    position: relative;
+    top: -0.5em;
+    font-size: 0.6em;
+}
+
+.multiline-overflow {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 60vh;
+}
+
+.mycontent {
+    margin-top: 5rem !important;
+    margin-bottom: 7rem !important;
+}
+
+.footer {
+    flex-shrink: 0;
+}

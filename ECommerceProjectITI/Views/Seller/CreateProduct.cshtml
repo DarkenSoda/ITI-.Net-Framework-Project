@@ -1,0 +1,88 @@
+﻿@model ProductViewModel
+
+@{
+	ViewData["Title"] = "Create Product";
+}
+
+<script>
+	function displaySelectedImage(input) {
+		const selectedImage = document.getElementById("selectedImage");
+		if (input.files && input.files[0]) {
+			selectedImage.src = URL.createObjectURL(input.files[0]);
+			selectedImage.style.display = "block";
+		} else {
+			selectedImage.src = "#";
+			selectedImage.style.display = "none";
+		}
+	}
+
+	function removeSelectedImage() {
+		const imageElement = document.getElementById("selectedImage");
+		imageElement.src = "";
+		imageElement.style.display = "none";
+		selectedImage = null;
+
+		const fileInput = document.querySelector("input[name='Image']");
+		fileInput.value = "";
+	}
+</script>
+
+<div class="row justify-content-center">
+	<div class="col-md-4">
+		<div>
+			<h3 class="text-center">Create New Product</h3>
+			<hr />
+		</div>
+		<form asp-action="CreateProduct" method="post" enctype="multipart/form-data">
+			<div asp-validation-summary="All" class="text-danger"></div>
+			<div class="form-group">
+				<img id="selectedImage" src="#" alt="Selected Image" class="mx-auto rounded-4" style="max-height: 200px; display: none;" />
+			</div>
+			<div class="form-group">
+				<label asp-for="Image" class="control-label"></label>
+				<div class="form-group d-flex">
+					<input asp-for="Image" class="form-control" onchange="displaySelectedImage(this);" />
+					<div class="input-group-append">
+						<button type="button" class="btn btn-danger ms-2" onclick="removeSelectedImage()">
+							<i class="bi bi-trash"></i>
+						</button>
+					</div>
+				</div>
+				<span asp-validation-for="Image" class="text-danger"></span>
+			</div>
+			<div class="form-group">
+				<label asp-for="Name" class="control-label"></label>
+				<input asp-for="Name" class="form-control" />
+				<span asp-validation-for="Name" class="text-danger"></span>
+			</div>
+			<div class="form-group">
+				<label asp-for="Description" class="control-label"></label>
+				<input asp-for="Description" class="form-control" />
+				<span asp-validation-for="Description" class="text-danger"></span>
+			</div>
+			<div class="form-group">
+				<label asp-for="Price" class="control-label"></label>
+				<input asp-for="Price" value="10" type="number" class="form-control" />
+				<span asp-validation-for="Price" class="text-danger"></span>
+			</div>
+			<div class="form-group">
+				<label asp-for="MaxQuantity" class="control-label"></label>
+				<input asp-for="MaxQuantity" value="0" class="form-control" />
+				<span asp-validation-for="MaxQuantity" class="text-danger"></span>
+			</div>
+			<div class="form-group mt-3 d-flex justify-content-center">
+				<input type="submit" value="Create Product" class="btn btn-primary" />
+			</div>
+		</form>
+
+		<div class="mt-3 d-flex justify-content-center">
+			<a asp-action="Index" class="btn btn-outline-danger">Cancel</a>
+		</div>
+	</div>
+</div>
+
+@section Scripts {
+	@{
+		await Html.RenderPartialAsync("_ValidationScriptsPartial");
+	}
+}
